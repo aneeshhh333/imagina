@@ -2,7 +2,7 @@
   "name": "imagina",
   "version": "1.0.0",
   "scripts": {
-    "build": "cd client/my && npm install && npm run build",
+    "build": "cd client/my/my && npm install && npm run build",
     "start": "cd server && npm install && node index.js"
   }
 }

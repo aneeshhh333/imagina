@@ -48,14 +48,14 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
       .toFile(outputPath);
 
     res.download(outputPath, outFilename, (err) => {
-      try { fs.unlinkSync(inputPath); } catch (e) {}
-      try { fs.unlinkSync(outputPath); } catch (e) {}
+      try { fs.unlinkSync(inputPath); } catch {}
+      try { fs.unlinkSync(outputPath); } catch {}
       if (err) console.error("Send error:", err);
     });
   } catch (err) {
     console.error("Conversion error:", err);
     if (req?.file?.path) {
-      try { fs.unlinkSync(req.file.path); } catch (e) {}
+      try { fs.unlinkSync(req.file.path); } catch {}
     }
     res.status(500).send("Conversion failed: " + (err.message || "unknown error"));
   }
@@ -80,8 +80,8 @@ const buildPath = path.join(__dirname, "../client/my/my/build");
 // ✅ Serve static files
 app.use(express.static(buildPath));
 
-// ✅ Catch-all route to serve React app
-app.get("*", (req, res) => {
+// ✅ Catch-all route (Express v5 compatible)
+app.get("/*", (req, res) => {
   res.sendFile(path.join(buildPath, "index.html"));
 });
 

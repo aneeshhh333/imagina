@@ -1,14 +1,20 @@
-// server/index.js
 import express from "express";
 import multer from "multer";
 import cors from "cors";
 import sharp from "sharp";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+
+// ✅ Proper __dirname setup for ES modules (Render + local)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ------------------ Image Upload + Convert ------------------
 
 const upload = multer({
   dest: "uploads/",
@@ -21,10 +27,10 @@ const upload = multer({
   },
 });
 
-// Convert endpoint: POST /api/convert?format=png
 app.post("/api/convert", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).send("No file uploaded.");
+
     const { format } = req.query;
     const allowed = ["png", "jpg", "jpeg", "webp", "gif"];
     const target = (format || "").toLowerCase();
@@ -34,51 +40,51 @@ app.post("/api/convert", upload.single("file"), async (req, res) => {
     }
 
     const inputPath = req.file.path;
-    // ensure file ext for download filename
     const outFilename = `converted.${target === "jpeg" ? "jpg" : target}`;
     const outputPath = path.join("uploads", `${req.file.filename}.${target}`);
 
-    // Use Sharp to convert; for gif -> sharp only writes animated gifs if input is animated and you use toFormat('gif')
-    await sharp(inputPath).toFormat(target === "jpg" ? "jpeg" : target).toFile(outputPath);
+    await sharp(inputPath)
+      .toFormat(target === "jpg" ? "jpeg" : target)
+      .toFile(outputPath);
 
-    // Send file as attachment
     res.download(outputPath, outFilename, (err) => {
-      // cleanup both files
-      try { fs.unlinkSync(inputPath); } catch(e) {}
-      try { fs.unlinkSync(outputPath); } catch(e) {}
+      try { fs.unlinkSync(inputPath); } catch (e) {}
+      try { fs.unlinkSync(outputPath); } catch (e) {}
       if (err) console.error("Send error:", err);
     });
   } catch (err) {
     console.error("Conversion error:", err);
-    // Try best effort cleanup
     if (req?.file?.path) {
-      try { fs.unlinkSync(req.file.path); } catch(e) {}
+      try { fs.unlinkSync(req.file.path); } catch (e) {}
     }
     res.status(500).send("Conversion failed: " + (err.message || "unknown error"));
   }
 });
 
-// Basic health check
+// ------------------ Health Check ------------------
+
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
-// Global error handler for multer / other errors
+// ------------------ Global Error Handler ------------------
+
 app.use((err, req, res, next) => {
   console.error("Global error:", err.message);
   res.status(400).send(err.message || "Error");
 });
-// ------------------ existing code above ------------------
 
-const __dirname = path.resolve();
+// ------------------ Serve React Build ------------------
 
-// ✅ Serve React build (for production)
-app.use(express.static(path.join(__dirname, "../client/my/my/public")));
+// ✅ Absolute path to your React build folder
+const buildPath = path.join(__dirname, "../client/my/my/build");
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/my/my/public", "index.html"));
+// ✅ Serve static files
+app.use(express.static(buildPath));
+
+// ✅ Catch-all route to serve React app
+app.get("*", (req, res) => {
+  res.sendFile(path.join(buildPath, "index.html"));
 });
 
-// ------------------ start server ------------------
+// ------------------ Start Server ------------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
-
-

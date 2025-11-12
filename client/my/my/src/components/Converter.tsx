@@ -39,7 +39,8 @@ const Converter: React.FC = () => {
     formData.append("format", format);
 
     try {
-      const response = await fetch("https://imagina.onrender.com/convert", {
+      const response = await fetch(`https://imagina.onrender.com/api/convert?format=${format}`, {
+ {
         method: "POST",
         body: formData,
       });
@@ -148,3 +149,4 @@ const Converter: React.FC = () => {
 };
 
 export default Converter;
+

@@ -15,7 +15,7 @@ const App: React.FC = () => {
         <section id="home" className="home-section">
           <h2>Welcome to IMAGINA</h2>
           <p>
-            Transform your images effortlessly. IMAGINA makes image format
+            Convert your images effortlessly. IMAGINA makes image format
             conversion elegant, fast, and fun — powered by cutting-edge web tech.
           </p>
         </section>

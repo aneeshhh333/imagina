@@ -6,7 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// ✅ Proper __dirname setup for ES modules (Render + local)
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -74,13 +74,13 @@ app.use((err, req, res, next) => {
 
 // ------------------ Serve React Build ------------------
 
-// ✅ Absolute path to your React build folder
+
 const buildPath = path.join(__dirname, "../client/my/my/build");
 
-// ✅ Serve static files
+
 app.use(express.static(buildPath));
 
-// ✅ Catch-all route (Express v5 compatible)
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(buildPath, "index.html"));
 });

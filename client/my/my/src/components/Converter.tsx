@@ -47,11 +47,11 @@ const Converter: React.FC = () => {
 
       if (!response.ok) throw new Error("Conversion failed");
 
-      // Receive the converted image as a blob
+      // Receives the converted image as a blob
       const blob = await response.blob();
       const downloadUrl = URL.createObjectURL(blob);
 
-      // Automatically trigger download
+      // This triggers download
       const link = document.createElement("a");
       link.href = downloadUrl;
       link.download = `converted.${format}`;

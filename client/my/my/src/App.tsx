@@ -7,10 +7,10 @@ import "./App.css";
 const App: React.FC = () => {
   return (
     <div className="app">
-      {/* Header */}
+      
       <Header />
 
-      {/* Main Content */}
+      
       <main className="main-content">
         <section id="home" className="home-section">
           <h2>Welcome to IMAGINA</h2>
@@ -34,7 +34,7 @@ const App: React.FC = () => {
         </section>
       </main>
 
-      {/* Footer */}
+
       <Footer />
     </div>
   );
